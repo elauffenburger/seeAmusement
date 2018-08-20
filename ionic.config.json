@@ -4,10 +4,5 @@
     "cordova": {}
   },
   "type": "ionic-angular",
-  "proxies": [
-    {
-      "path": "/eamusement",
-      "proxyUrl": "https://p.eagate.573.jp"
-    }
-  ]
+  "proxies": []
 }

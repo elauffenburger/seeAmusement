@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { InAppBrowser, InAppBrowserOptions, InAppBrowserObject, InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import { toEAmusementUrl } from '../../helpers';
-import { SESSION_COOKIE_KEY, EAMUSEMENT_LOGIN_PATH, EAMUSEMENT_HOME_PATH } from '../../helpers/constants';
+import { EAMUSEMENT_LOGIN_PATH, EAMUSEMENT_HOME_PATH } from '../../helpers/constants';
 import { StringLookup } from '../../models/types';
 import { Storage } from '@ionic/storage';
+
+import { environment } from '@app/env';
 
 const CLEAR_CACHE = false;
 
@@ -100,6 +102,6 @@ export class SessionProvider {
   }
 
   getSessionCookie(cookies: StringLookup<string>): string {
-    return cookies && cookies[SESSION_COOKIE_KEY];
+    return cookies && cookies[environment.eamusement.sessionCookieKey];
   }
 }

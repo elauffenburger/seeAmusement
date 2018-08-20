@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicStorageModule } from '@ionic/storage';
+import { HTTP } from '@ionic-native/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
@@ -43,7 +44,8 @@ import { HttpClientModule } from '@angular/common/http';
     InAppBrowser,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     SessionProvider,
-    SongsProvider
+    SongsProvider,
+    HTTP
   ]
 })
 export class AppModule { }

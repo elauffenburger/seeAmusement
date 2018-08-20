@@ -1,5 +1,5 @@
-import { EAMUSEMENT_URL } from "./constants";
+import { environment } from '@app/env';
 
 export function toEAmusementUrl(relativeUrl: string): string {
-    return `${EAMUSEMENT_URL}${relativeUrl}`;
+    return `${environment.eamusement.url}${relativeUrl}`;
 }
