@@ -1,0 +1,1 @@
+export type StringLookup<TValue> = { [key: string]: TValue };

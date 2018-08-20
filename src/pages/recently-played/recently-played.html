@@ -1,0 +1,18 @@
+<ion-header>
+  <navbar title="Recently Played"></navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list *ngIf="songs">
+    <ion-item *ngFor="let song of songs">
+      <ion-thumbnail item-start>
+        <img [src]="song.thumbnailUrl" />
+      </ion-thumbnail>
+      <h2>{{song.title}}</h2>
+      <p>{{song.difficulty}}</p>
+      <ion-thumbnail item-end>
+        <img [src]="song.ratingThumbnailUrl" />
+      </ion-thumbnail>
+    </ion-item>
+  </ion-list>
+</ion-content>
