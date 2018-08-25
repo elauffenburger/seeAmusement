@@ -8,7 +8,7 @@ const env = process.env.IONIC_ENV;
 module.exports = function () {
     const config = monkeyPatchEnvironmentFileIntoConfig(DEFAULT_WEBPACK_CONFIG);
 
-    return DEFAULT_WEBPACK_CONFIG;
+    return config;
 };
 
 function monkeyPatchEnvironmentFileIntoConfig(config) {

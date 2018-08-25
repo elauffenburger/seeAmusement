@@ -16,3 +16,5 @@ export const environment: Environment = {
         sessionCookieKey: 'M573SSID'
     }
 }
+
+export default environment;

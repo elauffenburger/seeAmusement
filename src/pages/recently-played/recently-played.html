@@ -4,14 +4,14 @@
 
 <ion-content padding>
   <ion-list *ngIf="songs">
-    <ion-item *ngFor="let song of songs" (press)="this.showSongDebugInfo(song)">
+    <ion-item *ngFor="let song of toRecentlyPlayedSongs(songs)" (press)="this.showSongDebugInfo(song)">
       <ion-thumbnail item-start>
         <img [src]="song.thumbnailUrl" />
       </ion-thumbnail>
       <h2>{{song.title}}</h2>
-      <p>{{song.difficulty}}</p>
+      <p>{{song.playInfo.difficulty.difficulty}}</p>
       <ion-thumbnail class="score-icon"  item-end>
-        <img [src]="song.ratingThumbnailUrl" />
+        <img [src]="song.playInfo.difficulty.ratingThumbnailUrl" />
       </ion-thumbnail>
     </ion-item>
   </ion-list>

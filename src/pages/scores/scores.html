@@ -1,0 +1,24 @@
+<ion-header>
+  <navbar title="All Scores">
+    <ng-container class="buttons">
+      <button ion-button class="refresh" (click)="onClickRefreshButton()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </ng-container>
+  </navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item class="song" *ngFor="let song of songs">
+      <ion-thumbnail item-start>
+        <img [src]="song.thumbnailUrl" />
+      </ion-thumbnail>
+      <h2 class="song-title">{{song.title}}</h2>
+      <p>{{song.playInfo[0]?.difficulty.difficulty}}</p>
+      <ion-thumbnail class="score-icon" item-end>
+        <img [src]="song.playInfo[0]?.difficulty.ratingThumbnailUrl" />
+      </ion-thumbnail>
+    </ion-item>
+  </ion-list>
+</ion-content>

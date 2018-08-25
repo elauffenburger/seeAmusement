@@ -7,6 +7,7 @@ import { HomePage } from '../pages/home/home';
 import { RecentlyPlayedPage } from '../pages/recently-played/recently-played';
 
 import { environment } from '@app/env';
+import { ScoresPage } from '../pages/scores/scores';
 
 @Component({
   templateUrl: 'app.html'
@@ -14,7 +15,7 @@ import { environment } from '@app/env';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+  rootPage: any = ScoresPage;
 
   pages: Array<{ title: string, component: any }>;
 
@@ -24,7 +25,8 @@ export class MyApp {
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'Home', component: HomePage },
-      { title: 'Recently Played', component: RecentlyPlayedPage }
+      { title: 'Recently Played', component: RecentlyPlayedPage },
+      { title: 'All Songs', component: ScoresPage }
     ];
 
   }

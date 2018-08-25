@@ -16,13 +16,16 @@ import { SessionProvider } from '../providers/session/session';
 import { RecentlyPlayedPage } from '../pages/recently-played/recently-played';
 import { SongsProvider } from '../providers/songs/songs';
 import { HttpClientModule } from '@angular/common/http';
+import { ScoresPage } from '../pages/scores/scores';
+import { UiProvider } from '../providers/ui/ui';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     OptionsPage,
-    RecentlyPlayedPage
+    RecentlyPlayedPage,
+    ScoresPage
   ],
   imports: [
     BrowserModule,
@@ -36,7 +39,8 @@ import { HttpClientModule } from '@angular/common/http';
     MyApp,
     HomePage,
     OptionsPage,
-    RecentlyPlayedPage
+    RecentlyPlayedPage,
+    ScoresPage
   ],
   providers: [
     StatusBar,
@@ -45,7 +49,8 @@ import { HttpClientModule } from '@angular/common/http';
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     SessionProvider,
     SongsProvider,
-    HTTP
+    HTTP,
+    UiProvider
   ]
 })
 export class AppModule { }

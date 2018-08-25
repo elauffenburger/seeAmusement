@@ -4,6 +4,7 @@
   </button>
   <ion-title>{{title}}</ion-title>
   <ion-buttons end>
+    <ng-content select=".buttons"></ng-content>
     <button ion-button class="options" (click)="openOptions()">
       <ion-icon name="options"></ion-icon>
     </button>

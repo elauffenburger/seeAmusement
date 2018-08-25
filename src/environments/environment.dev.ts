@@ -3,8 +3,7 @@ import { Storage } from "@ionic/storage";
 import { SessionProvider } from "../providers/session/session";
 import { SongsProvider } from "../providers/songs/songs";
 import { RecentlyPlayedPage } from "../pages/recently-played/recently-played";
-
-const FORCED_SESSION_ID = '001fc1c6-b657-4319-970a-dd17463e493f';
+import { ScoresPage } from "../pages/scores/scores";
 
 export const environment: Environment = {
     eamusement: {
@@ -21,11 +20,5 @@ export const environment: Environment = {
 
         // Set up debug services on window
         (<any>window).services = services;
-
-        // Fake a session
-        services.session.set(FORCED_SESSION_ID);
-
-        // Nav to RecentlyPlayed
-        app.nav.setRoot(RecentlyPlayedPage);
     }
 }
