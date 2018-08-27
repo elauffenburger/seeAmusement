@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: My first serverless application.
+
+Resources:
+  Products:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: songs.handler
+      Runtime: nodejs6.10
+      Events:
+        GetRecentlyPlayed:
+          Type: Api
+          Properties:
+            Path: /recently-played
+            Method: post
+        GetAll:
+          Type: Api
+          Properties:
+            Path: /all
+            Method: post
