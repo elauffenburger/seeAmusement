@@ -2,7 +2,11 @@ import { Song, SongPlayInfo, SongType } from '../../models';
 import { toEAmusementUrl } from '../../helpers';
 import { EAMUSEMENT_DDR_RECENTLY_PLAYED_PATH, EAMUSEMENT_DDR_PLAY_DATA_SINGLE_PATH } from '../../helpers/constants';
 
-import { range, map } from 'lodash';
+import range from 'lodash/range'
+
+const _ = {
+    range
+}
 
 import { convert as convertJapanese, ConvertOptions } from 'encoding-japanese';
 import fetch, { Response } from 'node-fetch';
@@ -83,15 +87,16 @@ export class SongsService {
 
             const firstPageResponse = await this.getSongDataFromPagedResponse(firstPageDom);
 
-            const otherPagesPromises = map(range(1, numPages), offset => {
-                const offsetUrl = `${url}?offset=${offset}`;
+            const otherPagesPromises = _.range(1, numPages)
+                .map(offset => {
+                    const offsetUrl = `${url}?offset=${offset}`;
 
-                return this.tryGetSongs(offsetUrl, args.sessionKey, async response => {
-                    const data = this.getSongDataFromPagedResponse(await this.responseToDocument(response));
+                    return this.tryGetSongs(offsetUrl, args.sessionKey, async response => {
+                        const data = this.getSongDataFromPagedResponse(await this.responseToDocument(response));
 
-                    return data;
-                })
-            });
+                        return data;
+                    })
+                });
 
             const allResponses = [
                 firstPageResponse,
@@ -123,6 +128,8 @@ export class SongsService {
             to: 'UTF8',
             type: 'string'
         });
+
+        console.log(html);
 
         return new DOMParser().parseFromString(html, 'text/html');
     }

@@ -2,13 +2,15 @@ const path = require('path');
 
 const CopyPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const slsw = require('serverless-webpack');
 
 let config = {
-    entry: {
-        songs: './src/songs/index.ts'
-    },
+    mode: 'development',
+    entry: slsw.lib.entries,
     output: {
-        path: path.resolve(__dirname, 'dist')
+        libraryTarget: 'commonjs',
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js'
     },
     module: {
         rules: [
@@ -28,11 +30,15 @@ let config = {
     target: 'node',
     plugins: [
         new CopyPlugin([
-            './template.yaml'
+            './template.yaml',
+            './serverless.yml'
+            // Note to future Eric: the issue is that you're dropping .ts files in the dist
+            // folder, which node obviously isn't going to recognize as modules.  You'll need to 
+            // drop the transpiled source there and that should solve the sls MODULE_NOT_FOUND issue
         ])
     ],
     resolve: {
-        extensions: ['.json', '.ts'],
+        extensions: ['.json', '.ts', '.js'],
         alias: {
             'node-fetch': path.resolve(__dirname, './node_modules/node-fetch/lib/index.js'),
             'encoding-japanese': path.resolve(__dirname, './node_modules/encoding-japanese/encoding.js')
@@ -50,4 +56,4 @@ let config = {
     }
 }
 
-exports.default = config;
+module.exports = config;
