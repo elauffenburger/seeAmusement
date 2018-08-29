@@ -59,19 +59,13 @@ plugins:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          method: get
-          path: hello
-          integration: lambda
   get-all:
     handler: src/apis/get-all.handler
     events:
       - http:
           path: songs/all
           method: post
+          cors: true
           integration: lambda
   get-recently-played:
     handler: src/apis/get-recently-played.handler
@@ -79,4 +73,5 @@ functions:
       - http:
           path: songs/recently-played
           method: post
+          cors: true
           integration: lambda
