@@ -20,8 +20,7 @@ service: songs # NOTE: update this with your service name
 provider:
   name: aws
   runtime: nodejs8.10
-  environment:
-    NODE_ENV: local
+  timeout: 10
 
 plugins:
   - serverless-webpack

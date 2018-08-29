@@ -17,7 +17,8 @@
     "@babel/preset-env": "^7.0.0-rc.3",
     "@types/aws-lambda": "^8.10.11",
     "@types/aws-sdk": "^2.7.0",
-    "@types/encoding-japanese": "^1.0.15",
+    "@types/cheerio": "^0.22.9",
+    "@types/iconv-lite": "0.0.1",
     "@types/lodash": "^4.14.116",
     "@types/node-fetch": "^2.1.2",
     "awesome-typescript-loader": "^4.0.1",
@@ -32,7 +33,8 @@
   },
   "dependencies": {
     "aws-sdk": "^2.302.0",
-    "encoding-japanese": "^1.0.29",
+    "cheerio": "^1.0.0-rc.2",
+    "iconv-lite": "^0.4.24",
     "lodash": "^4.17.10",
     "node-fetch": "^2.2.0"
   }

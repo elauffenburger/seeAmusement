@@ -4,12 +4,15 @@ import { EAMUSEMENT_DDR_RECENTLY_PLAYED_PATH, EAMUSEMENT_DDR_PLAY_DATA_SINGLE_PA
 
 import range from 'lodash/range'
 
-const _ = {
-    range
-}
+const _ = { range }
 
-import { convert as convertJapanese, ConvertOptions } from 'encoding-japanese';
 import fetch, { Response } from 'node-fetch';
+import iconv from 'iconv-lite';
+
+import $ from 'cheerio';
+
+import URL from 'url';
+import querystring from 'querystring';
 
 export interface GetAllSongsArgs {
     type: SongType;
@@ -41,28 +44,32 @@ export class SongsService {
         return this.tryGetSongs(url, sessionKey, async response => {
             const dom = await this.responseToDocument(response);
 
-            const songs = (<HTMLElement[]>Array.apply(null, dom.querySelectorAll(`table#data_tbl tbody tr`)))
+            const songs = dom(`table#data_tbl tbody tr`)
                 .slice(1)
-                .map((row: HTMLElement) => {
-                    const columns: HTMLElement[] = Array.apply(null, row.querySelectorAll('td'));
+                .map((rowIndex, rowEl) => {
+                    const row = $(rowEl);
+
+                    const columns = row.find('td');
+                    const titleColumn = $(columns.get(0));
 
                     const song: Song = {
-                        title: columns[0].querySelector('a').textContent,
-                        thumbnailUrl: this.mungSongImageUrl(columns[0].querySelector('img').src),
+                        title: titleColumn.find('a').text(),
+                        thumbnailUrl: this.mungSongImageUrl(titleColumn.find('img').attr('src')),
                         playInfo: [
                             {
-                                timestamp: columns[4].textContent,
+                                timestamp: $(columns.get(4)).text(),
                                 difficulty: {
-                                    difficulty: columns[1].textContent,
-                                    ratingThumbnailUrl: this.mungSongImageUrl(columns[2].querySelector('img').src),
-                                    score: columns[3].textContent,
+                                    difficulty: $(columns.get(1)).text(),
+                                    ratingThumbnailUrl: this.mungSongImageUrl($(columns.get(2)).find('img').attr('src')),
+                                    score: $(columns.get(3)).text(),
                                 }
                             }
                         ]
                     };
 
                     return song;
-                });
+                })
+                .get<Song>();
 
             return { songs };
         });
@@ -86,7 +93,6 @@ export class SongsService {
             const numPages = this.getNumPagesInPagedResponse(firstPageDom);
 
             const firstPageResponse = await this.getSongDataFromPagedResponse(firstPageDom);
-
             const otherPagesPromises = _.range(1, numPages)
                 .map(offset => {
                     const offsetUrl = `${url}?offset=${offset}`;
@@ -122,46 +128,46 @@ export class SongsService {
         });
     }
 
-    private async responseToDocument(response: Response): Promise<Document> {
-        const html = <string>convertJapanese(await response.buffer(), <ConvertOptions>{
-            from: 'SJIS',
-            to: 'UTF8',
-            type: 'string'
-        });
+    private async responseToDocument(response: Response): Promise<CheerioStatic> {
+        const html = iconv.decode(await response.buffer(), 'CP932')
 
-        console.log(html);
-
-        return new DOMParser().parseFromString(html, 'text/html');
+        return $.load(html);
     }
 
-    private getNumPagesInPagedResponse(dom: Document): number {
-        const pages: HTMLElement[] = Array.apply(null, dom.querySelectorAll("#paging_box td div.page_num a"));
+    private getNumPagesInPagedResponse(dom: CheerioStatic): number {
+        const pages = dom("#paging_box td div.page_num a");
 
-        return parseInt(pages[pages.length - 1].textContent as string);
+        return parseInt($(pages[pages.length - 1]).text());
     }
 
-    private getSongDataFromPagedResponse(dom: Document): Promise<GetSongsResponse> {
-        const songs = Array.apply(null, dom.querySelectorAll('#data_tbl tbody tr.data'))
-            .map((row: HTMLElement) => {
-                const columns: HTMLElement[] = Array.apply(null, row.querySelectorAll("td"));
+    private getSongDataFromPagedResponse(dom: CheerioStatic): Promise<GetSongsResponse> {
+        const songs = dom('#data_tbl tbody tr.data')
+            .map((rowIndex, rowElement) => {
+                const row = $(rowElement);
+
+                const columns = row.find("td");
+                const titleColumn = $(columns.get(0));
 
                 const song: Song = {
-                    title: (columns[0].querySelector("a") as HTMLAnchorElement).text,
-                    thumbnailUrl: this.mungSongImageUrl((columns[0].querySelector("img") as HTMLImageElement).src),
+                    title: titleColumn.find('a').text(),
+                    thumbnailUrl: this.mungSongImageUrl(titleColumn.find('img').attr('src')),
                     playInfo: columns
                         .slice(1)
-                        .map(column => {
+                        .map((columnIndex, columnElement) => {
+                            const column = $(columnElement);
+
                             return {
                                 column: column,
-                                score: (column.querySelector('.data_score') as HTMLTableDataCellElement).textContent as string
+                                score: column.find('.data_score').text()
                             };
                         })
+                        .get<{ column: Cheerio, score: string }>()
                         .filter(({ column, score }) => !isNaN(parseInt(score)))
                         .map(({ column, score }) => {
                             return <SongPlayInfo>{
                                 difficulty: {
-                                    difficulty: column.id,
-                                    ratingThumbnailUrl: this.mungSongImageUrl((column.querySelector(".data_rank a img:first-child") as HTMLImageElement).src),
+                                    difficulty: column.attr('id'),
+                                    ratingThumbnailUrl: this.mungSongImageUrl(column.find(".data_rank a img:first-child").attr('src')),
                                     score: score
                                 }
                             };
@@ -169,7 +175,8 @@ export class SongsService {
                 };
 
                 return song;
-            });
+            })
+            .get<Song>();
 
         return Promise.resolve({ songs });
     }
@@ -197,7 +204,7 @@ export class SongsService {
 
         } catch (e) {
             console.log('something went critically wrong fetching songs!')
-            console.log(JSON.stringify(e));
+            console.log(e);
 
             // TODO: error handling
             return { error: 'unknown' };
@@ -205,10 +212,10 @@ export class SongsService {
     }
 
     private mungSongImageUrl(absoluteUrl: string): string {
-        const url = new URL(absoluteUrl);
-        url.searchParams.set('kind', '1');
+        const url = URL.parse(absoluteUrl, true);
+        const query = querystring.stringify({ ...url.query, kind: '1' });
 
-        return `${this.toEAmusementUrl(url.pathname)}${url.search}`
+        return `${this.toEAmusementUrl(url.pathname)}${query}`
     }
 
     private wasRedirectedToLogin(response: Response): boolean {
