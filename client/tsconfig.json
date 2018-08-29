@@ -13,7 +13,6 @@
     "baseUrl": "./",
     "sourceMap": true,
     "target": "es5",
-    "strict": true,
     "paths": {
       "@app/env": [
         "src/environments/environment"

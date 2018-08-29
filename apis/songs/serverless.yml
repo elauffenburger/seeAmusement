@@ -24,6 +24,7 @@ provider:
 
 plugins:
   - serverless-webpack
+  - serverless-offline
 
 # you can overwrite defaults here
 #  stage: dev

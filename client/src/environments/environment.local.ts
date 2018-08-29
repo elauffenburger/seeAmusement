@@ -6,6 +6,7 @@ import { RecentlyPlayedPage } from "../pages/recently-played/recently-played";
 import { ScoresPage } from "../pages/scores/scores";
 
 export const environment: Environment = {
+    apiUrl: 'http://localhost:3000',
     eamusement: {
         url: 'https://p.eagate.573.jp',
         serverId: 573,
@@ -17,6 +18,8 @@ export const environment: Environment = {
             session: app.injector.get(SessionProvider),
             songs: app.injector.get(SongsProvider)
         };
+
+        services.session.set('e222571a-0bb6-4988-9e9e-93906fe9c09e');
 
         // Set up debug services on window
         (<any>window).services = services;

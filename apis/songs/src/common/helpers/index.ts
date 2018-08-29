@@ -21,3 +21,7 @@ export function makeServiceProvider(): ServiceProvider {
 export function toEAmusementUrl(eamusementUrl: string, relativeUrl: string): string {
     return `${eamusementUrl}${relativeUrl}`;
 }
+
+export function isString(value: string | object): value is string {
+    return typeof value === 'string';
+}

@@ -8,7 +8,6 @@ import { Storage } from '@ionic/storage';
 import { environment } from '@app/env';
 
 const CLEAR_CACHE = false;
-
 const SESSION_STORAGE_KEY = 'SessionKey';
 
 @Injectable()
@@ -34,28 +33,23 @@ export class SessionProvider {
 
   createNewSession(): Promise<string> {
     return new Promise((res, rej) => {
-      const shouldClearCache = CLEAR_CACHE ? 'yes' : null;
+      const shouldClearCache = CLEAR_CACHE ? 'yes' : undefined;
 
       const browserOptions: InAppBrowserOptions = {
         clearcache: shouldClearCache,
         clearsessioncache: shouldClearCache
       };
 
-      const browser = this.browser.create(toEAmusementUrl(EAMUSEMENT_LOGIN_PATH), null, browserOptions);
+      const browser = this.browser.create(toEAmusementUrl(EAMUSEMENT_LOGIN_PATH), undefined, browserOptions);
 
       // Try to get the session cookie
       let session: string;
       browser.on('loadstop')
         .subscribe(async event => {
-          console.log('loadstop fired!');
-
           const cookies = await this.getBrowserCookies(browser);
 
           const sessionCookie = this.getSessionCookie(cookies);
           const isLoggedIn = this.verifyUserIsLoggedIn(event);
-
-          console.log('sessionCookie: ', sessionCookie);
-          console.log('isLoggedIn: ', isLoggedIn);
 
           if (!sessionCookie || !isLoggedIn) {
             return;
@@ -76,9 +70,6 @@ export class SessionProvider {
   verifyUserIsLoggedIn(event: InAppBrowserEvent): boolean {
     const homeUrl = toEAmusementUrl(EAMUSEMENT_HOME_PATH);
 
-    console.log(JSON.stringify(event));
-    console.log(homeUrl);
-
     return event.url.startsWith(homeUrl);
   }
 
@@ -97,7 +88,7 @@ export class SessionProvider {
             acc[key] = value;
 
             return acc;
-          }, {});
+          }, <any>{});
       });
   }
 

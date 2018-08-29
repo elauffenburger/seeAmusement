@@ -215,7 +215,7 @@ export class SongsService {
         const url = URL.parse(absoluteUrl, true);
         const query = querystring.stringify({ ...url.query, kind: '1' });
 
-        return `${this.toEAmusementUrl(url.pathname)}${query}`
+        return `${this.toEAmusementUrl(url.pathname)}?${query}`
     }
 
     private wasRedirectedToLogin(response: Response): boolean {

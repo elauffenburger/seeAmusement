@@ -1,6 +1,7 @@
 import { MyApp } from "../app/app.component";
 
 export interface Environment {
+    apiUrl: string,
     eamusement: {
         url: string,
         serverId: number,
@@ -10,6 +11,7 @@ export interface Environment {
 }
 
 export const environment: Environment = {
+    apiUrl: '',
     eamusement: {
         url: 'https://p.eagate.573.jp',
         serverId: 573,

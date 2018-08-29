@@ -22,7 +22,7 @@ export class UiProvider {
     }
 
     try {
-      return this.tryGetSongsRec(args);
+      return await this.tryGetSongsRec(args);
     } finally {
       if (!args.hideLoader) {
         loader.dismiss();
@@ -31,43 +31,50 @@ export class UiProvider {
   }
 
   private async tryGetSongsRec(args: TryGetSongsArgs): Promise<GetSongsResponse> {
-    const response = await args.getSongsFn(this.songs);
+    try {
+      const response = await args.getSongsFn(this.songs);
 
-    // If everything went smoothly, there's nothing else to do!
-    if (!response.error) {
-      if (args.afterGetSongsFn) {
-        await args.afterGetSongsFn(response);
+      // If everything went smoothly, there's nothing else to do!
+      if (!response.error) {
+        if (args.afterGetSongsFn) {
+          await args.afterGetSongsFn(response);
+        }
+
+        return response;
       }
 
-      return response;
-    }
-
-    // ...otherwise, we need to handle the error
-    switch (response.error) {
-      case 'no-auth':
-        this.alert
-          .create({
-            message: 'Authentication Failed!',
-            buttons: [
-              {
-                text: 'Login',
-                handler: () => {
-                  // Login and try again
-                  this.session.login()
-                    .then(() => {
-                      return this.tryGetSongsRec(args);
-                    });
+      // ...otherwise, we need to handle the error
+      switch (response.error) {
+        case 'no-auth':
+          this.alert
+            .create({
+              message: 'Authentication Failed!',
+              buttons: [
+                {
+                  text: 'Login',
+                  handler: () => {
+                    // Login and try again
+                    this.session.login()
+                      .then(() => {
+                        return this.tryGetSongsRec(args);
+                      });
+                  }
                 }
-              }
-            ]
-          })
-          .present();
+              ]
+            })
+            .present();
 
-        return response;
-      case 'unknown':
-        this.alert.create({ message: 'Some unknown error occurred' });
+          return response;
+        case 'unknown':
+          this.alert.create({ message: 'Some unknown error occurred' });
 
-        return response;
+          return response;
+      }
+    } catch (e) {
+      console.error('Something went critically wrong while getting songs!');
+      console.error(JSON.stringify(e));
+
+      throw e;
     }
   }
 }

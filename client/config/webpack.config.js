@@ -3,7 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
 
-const env = process.env.IONIC_ENV;
+console.log(process.env.NODE_ENV);
+const env = process.env.NODE_ENV || process.env.IONIC_ENV;
 
 module.exports = function () {
     const config = monkeyPatchEnvironmentFileIntoConfig(DEFAULT_WEBPACK_CONFIG);

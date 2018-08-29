@@ -1,14 +1,12 @@
 import { Context, APIGatewayEvent, Callback, Handler } from 'aws-lambda';
-import { makeServiceProvider } from '../common/helpers';
+import { makeServiceProvider, isString } from '../common/helpers';
 
 const services = makeServiceProvider();
 export const handler: Handler = async (event: APIGatewayEvent, context: Context, callback: Callback) => {
-    const body = JSON.parse(event.body) as {
-        sessionKey: string;
-    };
+    const body: { sessionKey: string; } = isString(event.body)
+        ? JSON.parse(event.body)
+        : event.body;
 
     const sessionKey = body.sessionKey;
-    const songs = await services.songs.getRecentlyPlayed(sessionKey);
-
-    callback(null, songs);
+    return await services.songs.getRecentlyPlayed(sessionKey);
 };
