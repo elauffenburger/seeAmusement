@@ -3,7 +3,7 @@ import { Storage } from "@ionic/storage";
 import { SessionProvider } from "../providers/session/session";
 import { SongsProvider } from "../providers/songs/songs";
 import { RecentlyPlayedPage } from "../pages/recently-played/recently-played";
-import { ScoresPage } from "../pages/scores/scores";
+import { ScoresOverviewPage } from "../pages/scores-overview/scores-overview";
 
 export const environment: Environment = {
     apiUrl: 'http://192.168.0.19:3000',

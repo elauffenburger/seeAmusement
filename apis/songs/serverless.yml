@@ -60,6 +60,14 @@ plugins:
 #    - exclude-me-dir/**
 
 functions:
+  get-metadata:
+    handler: src/apis/get-metadata.handler
+    events:
+      - http:
+          path: songs/metadata
+          method: get
+          cors: true
+          integration: lambda
   get-all:
     handler: src/apis/get-all.handler
     events:

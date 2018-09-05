@@ -7,7 +7,7 @@ import { HomePage } from '../pages/home/home';
 import { RecentlyPlayedPage } from '../pages/recently-played/recently-played';
 
 import { environment } from '@app/env';
-import { ScoresPage } from '../pages/scores/scores';
+import { ScoresOverviewPage } from '../pages/scores-overview/scores-overview';
 
 @Component({
   templateUrl: 'app.html'
@@ -15,7 +15,7 @@ import { ScoresPage } from '../pages/scores/scores';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = ScoresPage;
+  rootPage: any = ScoresOverviewPage;
 
   pages: Array<{ title: string, component: any }>;
 
@@ -26,7 +26,7 @@ export class MyApp {
     this.pages = [
       { title: 'Home', component: HomePage },
       { title: 'Recently Played', component: RecentlyPlayedPage },
-      { title: 'All Songs', component: ScoresPage }
+      { title: 'All Songs', component: ScoresOverviewPage }
     ];
 
   }

@@ -1,5 +1,6 @@
 export interface Song {
     title: string;
+    artist: string;
     thumbnailUrl: string;
     playInfo: SongPlayInfo[];    
 }
@@ -15,4 +16,22 @@ export interface SongDifficultyInfo {
     ratingThumbnailUrl: string;
 }
 
-export type SongType = 'single';
+export type SongStyle = 'single';
+
+export interface SongMetadata {
+    title: string;
+    artist: string;
+    styles: SongStyleMetadata[];
+}
+
+export interface SongStyleMetadata {
+    style: SongStyle;
+    difficulties: SongStyleDifficultyMetadata[];
+}
+
+export type SongStyleDifficultyName = 'beginner' | 'basic' | 'difficult' | 'expert' | 'challenge';;
+
+export interface SongStyleDifficultyMetadata {
+    name: SongStyleDifficultyName
+    score?: number;
+}

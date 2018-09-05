@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { GetSongsResponse, SongsProvider } from '../songs/songs';
+import { GetSongsScoresResponse, SongsProvider } from '../songs/songs';
 import { AlertController, LoadingController } from 'ionic-angular';
 import { SessionProvider } from '../session/session';
 
 export interface TryGetSongsArgs {
   hideLoader?: boolean;
 
-  getSongsFn: (songs: SongsProvider) => Promise<GetSongsResponse>;
-  afterGetSongsFn?: (songs: GetSongsResponse) => Promise<any>;
+  getSongsFn: (songs: SongsProvider) => Promise<GetSongsScoresResponse>;
+  afterGetSongsFn?: (songs: GetSongsScoresResponse) => Promise<any>;
 }
 
 @Injectable()
 export class UiProvider {
   constructor(private songs: SongsProvider, private alert: AlertController, private session: SessionProvider, private loader: LoadingController) { }
 
-  async tryGetSongs(args: TryGetSongsArgs): Promise<GetSongsResponse> {
+  async tryGetSongs(args: TryGetSongsArgs): Promise<GetSongsScoresResponse> {
     const loader = this.loader.create({ content: 'Loading...' });
 
     if (!args.hideLoader) {
@@ -30,7 +30,7 @@ export class UiProvider {
     }
   }
 
-  private async tryGetSongsRec(args: TryGetSongsArgs): Promise<GetSongsResponse> {
+  private async tryGetSongsRec(args: TryGetSongsArgs): Promise<GetSongsScoresResponse> {
     try {
       const response = await args.getSongsFn(this.songs);
 

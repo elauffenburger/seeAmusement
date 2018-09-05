@@ -16,7 +16,7 @@ import { SessionProvider } from '../providers/session/session';
 import { RecentlyPlayedPage } from '../pages/recently-played/recently-played';
 import { SongsProvider } from '../providers/songs/songs';
 import { HttpClientModule } from '@angular/common/http';
-import { ScoresPage } from '../pages/scores/scores';
+import { ScoresOverviewPage } from '../pages/scores-overview/scores-overview';
 import { UiProvider } from '../providers/ui/ui';
 
 @NgModule({
@@ -25,7 +25,7 @@ import { UiProvider } from '../providers/ui/ui';
     HomePage,
     OptionsPage,
     RecentlyPlayedPage,
-    ScoresPage
+    ScoresOverviewPage
   ],
   imports: [
     BrowserModule,
@@ -40,7 +40,7 @@ import { UiProvider } from '../providers/ui/ui';
     HomePage,
     OptionsPage,
     RecentlyPlayedPage,
-    ScoresPage
+    ScoresOverviewPage
   ],
   providers: [
     StatusBar,

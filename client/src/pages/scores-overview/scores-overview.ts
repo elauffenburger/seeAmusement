@@ -27,10 +27,10 @@ interface SongFilter {
 }
 
 @Component({
-  selector: 'page-scores',
-  templateUrl: 'scores.html',
+  selector: 'page-scores-overview',
+  templateUrl: 'scores-overview.html',
 })
-export class ScoresPage {
+export class ScoresOverviewPage {
   songs: Song[] = [];
 
   activeFilter: SongFilter;

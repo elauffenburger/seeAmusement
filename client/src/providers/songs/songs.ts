@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SessionProvider } from '../session/session';
-import { Song, SongType } from '../../models';
+import { Song, SongStyle, SongMetadata } from '../../models';
 
 import { environment } from '@app/env';
 import { Observer } from 'rxjs/Observer';
@@ -10,32 +10,42 @@ import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 
 export interface GetAllSongsArgs {
-  type: SongType;
+  type: SongStyle;
   getLatest: boolean;
   onProgress?: Observer<{ pageNum: number }>;
 }
 
-export interface GetSongsResponse {
+export interface GetSongsScoresResponse {
   songs?: Song[],
   error?: 'no-auth' | 'unknown'
+}
+
+export interface GetSongsMetadataResponse {
+  songs: SongMetadata[];
 }
 
 @Injectable()
 export class SongsProvider {
   constructor(private http: HttpClient, private session: SessionProvider, private storage: Storage) { }
 
-  async getRecentlyPlayed(): Promise<GetSongsResponse> {
-      console.log('getting recently played...')
+  async getMetadata(getLatest: false): Promise<GetSongsMetadataResponse> {
+    const url = `${environment.apiUrl}/songs/metadata`;
 
-      const url = `${environment.apiUrl}/songs/recently-played`;
-      const body = { sessionKey: await this.session.get() };
-
-      console.log('loading url: ', url);
-
-      return await this.http.post<GetSongsResponse>(url, body).toPromise();
+    return await this.http.get<GetSongsMetadataResponse>(url).toPromise();
   }
 
-  async getAll(args: GetAllSongsArgs): Promise<GetSongsResponse> {
+  async getRecentlyPlayed(): Promise<GetSongsScoresResponse> {
+    console.log('getting recently played...')
+
+    const url = `${environment.apiUrl}/songs/recently-played`;
+    const body = { sessionKey: await this.session.get() };
+
+    return await this.http.post<GetSongsScoresResponse>(url, body).toPromise();
+  }
+
+  async getAll(args: GetAllSongsArgs): Promise<GetSongsScoresResponse> {
+    console.log('getting all...');
+
     args.onProgress = args.onProgress || Observable.create();
 
     // If we need to get the latest or we haven't cached any song scores yet
@@ -49,23 +59,43 @@ export class SongsProvider {
     return this.getCachedSongScores(args.type);
   }
 
-  private async getLatestScores(args: GetAllSongsArgs): Promise<GetSongsResponse> {
-    return this.http.post<GetSongsResponse>(`${environment.apiUrl}/songs/all`, { type: args.type, getLatest: args.getLatest, sessionKey: await this.session.get() }).toPromise();
+  private async getLatestScores(args: GetAllSongsArgs): Promise<GetSongsScoresResponse> {
+    return this.http.post<GetSongsScoresResponse>(`${environment.apiUrl}/songs/all`, { type: args.type, getLatest: args.getLatest, sessionKey: await this.session.get() }).toPromise();
   }
 
-  private async hasCachedSongScores(type: SongType): Promise<boolean> {
-    return await this.storage.keys().then(keys => !!keys.find(key => key == this.getAllSongScoresCacheKeyForType(type)));
+  private async hasCachedSongScores(type: SongStyle): Promise<boolean> {
+    return this.hasCacheKey(this.getAllSongScoresCacheKeyForType(type));
   }
 
-  private cacheSongScores(type: SongType, songs: GetSongsResponse): Promise<any> {
+  private cacheSongScores(type: SongStyle, songs: GetSongsScoresResponse): Promise<any> {
     return this.storage.set(this.getAllSongScoresCacheKeyForType(type), songs);
   }
 
-  private getCachedSongScores(type: SongType): Promise<GetSongsResponse> {
+  private getCachedSongScores(type: SongStyle): Promise<GetSongsScoresResponse> {
     return this.storage.get(this.getAllSongScoresCacheKeyForType(type));
   }
 
-  private getAllSongScoresCacheKeyForType(type: SongType): string {
+  private getAllSongScoresCacheKeyForType(type: SongStyle): string {
     return `ALL_SONG_SCORES_${type}`;
+  }
+
+  private hasCachedSongsMetadata(): Promise<boolean> {
+    return this.hasCacheKey(this.getSongsMetadataCacheKey());
+  }
+
+  private getCachedSongsMetadata(): Promise<GetSongsMetadataResponse> {
+    return this.storage.get(this.getSongsMetadataCacheKey());
+  }
+
+  private cacheSongsMetadata(metadata: GetSongsMetadataResponse) {
+    return this.storage.set(this.getSongsMetadataCacheKey(), metadata);
+  }
+
+  private getSongsMetadataCacheKey(): string {
+    return `SONGS_METADATA`;
+  }
+
+  private hasCacheKey(key: string): Promise<boolean> {
+    return this.storage.keys().then(keys => !!keys.find(k => k == key));
   }
 }
