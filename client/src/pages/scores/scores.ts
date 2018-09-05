@@ -4,6 +4,28 @@ import { UiProvider } from '../../providers/ui/ui';
 import { Song } from '../../models';
 import { Observable } from 'rxjs/Observable';
 
+import groupBy from 'lodash/groupBy';
+import flatMap from 'lodash/flatMap';
+
+const _ = { groupBy, flatMap };
+
+enum SongFilterType {
+  Level,
+  Rating,
+  Series,
+  Genre,
+  Version
+}
+
+interface SongGrouping { grouping: string; songs: Song[] };
+type SongFilterOp = (songs: Song[]) => SongGrouping[];
+
+interface SongFilter {
+  text: string;
+  filter: SongFilterType;
+  op: SongFilterOp
+}
+
 @Component({
   selector: 'page-scores',
   templateUrl: 'scores.html',
@@ -11,7 +33,49 @@ import { Observable } from 'rxjs/Observable';
 export class ScoresPage {
   songs: Song[] = [];
 
+  activeFilter: SongFilter;
+  filters: SongFilter[] = [
+    {
+      text: 'By Level',
+      filter: SongFilterType.Level,
+      op: songs => {
+        return this.groupSongsBy(songs, song => song.playInfo[0].difficulty.difficulty);
+      }
+    },
+    {
+      text: 'By Rating',
+      filter: SongFilterType.Rating,
+      op: songs => {
+        return this.groupSongsBy(songs, song => song.playInfo[0].difficulty.score);
+      }
+    }
+  ];
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private ui: UiProvider, private loader: LoadingController, private alert: AlertController) { }
+
+  private groupSongsBy<T>(songs: Song[], groupByFn: (song: Song) => T) {
+    const songsByPlayInfo = this.toSongsByPlayInfo(songs);
+    const groupedResults = _.groupBy(songsByPlayInfo, groupByFn);
+
+    return Object.keys(groupedResults)
+      .map<SongGrouping>(grouping => {
+        return {
+          grouping: grouping,
+          songs: groupedResults[grouping]
+        };
+      })
+  }
+
+  private toSongsByPlayInfo(songs: Song[]) {
+    return _.flatMap(songs, song => {
+      return song.playInfo.map<Song>(playInfo => {
+        return {
+          ...song,
+          playInfo: [playInfo]
+        };
+      });
+    });
+  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ScoresPage');
@@ -22,15 +86,17 @@ export class ScoresPage {
   }
 
   async init() {
-    this.refreshScoreData(false);
+    this.setActiveFilter();
+    this.getScoreData(false);
   }
 
-  async refreshScoreData(getLatest: boolean) {
+  setActiveFilter() {
+    this.activeFilter = this.activeFilter || (this.filters.length && this.filters[0]);
+  }
+
+  async getScoreData(getLatest: boolean) {
     try {
       const onProgress = new EventEmitter<{ pageNum: number }>();
-      onProgress.subscribe((progress: { pageNum: number }) => {
-        console.log(`loaded page ${progress.pageNum}`);
-      });
 
       await this.ui.tryGetSongs({
         getSongsFn: songs => {
@@ -41,9 +107,6 @@ export class ScoresPage {
           });
         },
         afterGetSongsFn: async response => {
-          console.log(response.songs[0].title);
-          console.log(`"蒼い衝動 ～for EXTREME～"`);
-
           this.songs.splice(0, this.songs.length - 1, ...response.songs);
         }
       });
@@ -52,7 +115,11 @@ export class ScoresPage {
     }
   }
 
+  getVisibleSongGroupings(): SongGrouping[] {
+    return this.activeFilter.op(this.songs);
+  }
+
   onClickRefreshButton() {
-    this.refreshScoreData(true);
+    this.getScoreData(true);
   }
 }

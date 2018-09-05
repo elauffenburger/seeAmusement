@@ -23,9 +23,16 @@ self.toolbox.precache(
 );
 
 // dynamically cache any other local assets
-self.toolbox.router.any('/*', self.toolbox.fastest);
+//self.toolbox.router.any('/*', self.toolbox.fastest);
 
-self.toolbox.router.any('https://p.eagate.573.jp/*', self.toolbox.fastest);
+self.toolbox.router.get('https://p.eagate.573.jp/*/binary_jk.html', self.toolbox.cacheFirst, {
+  debug: true,
+  cache: {
+    queryOptions: {
+      ignoreSearch: true
+    }
+  }
+});
 
 // for any other requests go to the network, cache,
 // and then only use that cached resource if your user goes offline

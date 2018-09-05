@@ -9,16 +9,15 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list>
-    <ion-item class="song" *ngFor="let song of songs">
-      <ion-thumbnail item-start>
-        <img [src]="song.thumbnailUrl" />
-      </ion-thumbnail>
-      <h2 class="song-title">{{song.title}}</h2>
-      <p>{{song.playInfo[0]?.difficulty.difficulty}}</p>
-      <ion-thumbnail class="score-icon" item-end>
-        <img [src]="song.playInfo[0]?.difficulty.ratingThumbnailUrl" />
-      </ion-thumbnail>
-    </ion-item>
-  </ion-list>
+  <ng-container *ngIf="!!activeFilter">
+    <ion-segment [(ngModel)]="activeFilter">
+      <ion-segment-button *ngFor="let filter of filters" [value]="filter">
+        {{filter.text}}
+      </ion-segment-button>
+    </ion-segment>
+    <ion-item-group *ngFor="let group of this.getVisibleSongGroupings()">
+      <ion-item-divider color="light">{{group.grouping}}</ion-item-divider>
+      <scores-song *ngFor="let song of group.songs" [song]="song"></scores-song>
+    </ion-item-group>
+  </ng-container>
 </ion-content>

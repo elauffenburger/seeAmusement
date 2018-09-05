@@ -30,7 +30,7 @@ export class SongsProvider {
       const url = `${environment.apiUrl}/songs/recently-played`;
       const body = { sessionKey: await this.session.get() };
 
-      console.log(url);
+      console.log('loading url: ', url);
 
       return await this.http.post<GetSongsResponse>(url, body).toPromise();
   }

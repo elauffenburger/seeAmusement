@@ -72,7 +72,7 @@ export class UiProvider {
       }
     } catch (e) {
       console.error('Something went critically wrong while getting songs!');
-      console.error(JSON.stringify(e));
+      console.error('errors: ', JSON.stringify(e));
 
       throw e;
     }
