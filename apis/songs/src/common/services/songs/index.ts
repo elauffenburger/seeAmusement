@@ -1,4 +1,4 @@
-import { Song, SongPlayInfo, SongStyle, SongMetadata, SongStyleMetadata, SongStyleDifficultyMetadata, SongStyleDifficultyName } from '../../models';
+import { Song, SongPlayInfo, SongStyle, SongMetadata, SongStyleMetadata, SongStyleDifficultyMetadata, SongStyleDifficultyName, SongPlayRating } from '../../models';
 import { toEAmusementUrl } from '../../helpers';
 import { EAMUSEMENT_DDR_RECENTLY_PLAYED_PATH, EAMUSEMENT_DDR_PLAY_DATA_SINGLE_PATH, EAMUSEMENT_DDR_MUSIC_INDEX_PATH } from '../../helpers/constants';
 
@@ -55,11 +55,15 @@ export class SongsService {
 
         // Figure out how many pages total there are
         const numPages = this.getNumPagesInPagedResponse(firstPageDom);
+        console.log(`numPages: ${numPages}`);
 
         // Parse all the other pages
         const otherPagesPromises = _.range(1, numPages)
             .map(async pageNum => {
-                const dom = await fetch(url)
+                const pageUrl = `${url}?offset=${pageNum}`;
+                console.log(`fetching: ${pageUrl}`);
+
+                const dom = await fetch(pageUrl)
                     .then(res => this.eamusementResponseToDocument(res));
 
                 return this.getSongsMetadataFromPage(dom);
@@ -95,6 +99,9 @@ export class SongsService {
                     const titleColumn = $(columns.get(0));
 
                     const imageUrl = titleColumn.find('img').attr('src');
+                    const score = parseInt($(columns.get(3)).text());
+
+                    const ratingThumbnailUrl = $(columns.get(2)).find('img').attr('src');
 
                     const song: Song = {
                         title: titleColumn.find('a').text(),
@@ -103,10 +110,11 @@ export class SongsService {
                         playInfo: [
                             {
                                 timestamp: $(columns.get(4)).text(),
+                                score: isNaN(score) ? null : score,
+                                rating: this.getRatingFromImageUrl(this.getRatingFromImageUrl(ratingThumbnailUrl)),
                                 difficulty: {
                                     difficulty: $(columns.get(1)).text(),
-                                    ratingThumbnailUrl: this.mungSongImageUrl($(columns.get(2)).find('img').attr('src')),
-                                    score: $(columns.get(3)).text(),
+                                    ratingThumbnailUrl: this.mungSongImageUrl(ratingThumbnailUrl),
                                 }
                             }
                         ]
@@ -201,17 +209,21 @@ export class SongsService {
                         {
                             style: 'single',
                             difficulties: _.take($row.find('.difficult').toArray(), 5)
-                                .map<SongStyleDifficultyMetadata>(difficultyCol => {
+                                .reduce<SongStyleDifficultyMetadata[]>((acc, difficultyCol) => {
                                     const $difficultyCol = $(difficultyCol);
 
                                     const shortDifficultyName = $difficultyCol.prop('class').split(' ')[1];
                                     const score = parseInt($difficultyCol.text());
 
-                                    return {
-                                        name: toFullDifficultyName(shortDifficultyName),
-                                        score: isNaN(score) ? null : score
-                                    };
-                                })
+                                    if (!isNaN(score)) {
+                                        acc.push({
+                                            name: toFullDifficultyName(shortDifficultyName),
+                                            value: score
+                                        })
+                                    }
+
+                                    return acc;
+                                }, [])
                         }
                     ]
                 };
@@ -249,17 +261,19 @@ export class SongsService {
 
                             return {
                                 column: column,
-                                score: column.find('.data_score').text()
+                                score: parseInt(column.find('.data_score').text())
                             };
                         })
-                        .get<{ column: Cheerio, score: string }>()
-                        .filter(({ column, score }) => !isNaN(parseInt(score)))
+                        .get<{ column: Cheerio, score: number }>()
                         .map(({ column, score }) => {
+                            const ratingImageUrl = column.find(".data_rank a img:first-child").attr('src');
+
                             return <SongPlayInfo>{
+                                score: isNaN(score) ? null : score,
+                                rating: this.getRatingFromImageUrl(ratingImageUrl),
                                 difficulty: {
                                     difficulty: column.attr('id'),
-                                    ratingThumbnailUrl: this.mungSongImageUrl(column.find(".data_rank a img:first-child").attr('src')),
-                                    score: score
+                                    ratingThumbnailUrl: this.mungSongImageUrl(ratingImageUrl),
                                 }
                             };
                         })
@@ -300,6 +314,10 @@ export class SongsService {
             // TODO: error handling
             return { error: 'unknown' };
         }
+    }
+
+    private getRatingFromImageUrl(url: string): SongPlayRating {
+        return <SongPlayRating>url.match(/rank_s_(.*?)(?:_.*)?.png/)[1].toUpperCase();
     }
 
     private mungSongImageUrl(absoluteUrl: string): string {

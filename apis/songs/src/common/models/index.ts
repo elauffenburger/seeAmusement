@@ -5,14 +5,17 @@ export interface Song {
     playInfo: SongPlayInfo[];    
 }
 
+export type SongPlayRating = 'NONE' | 'E' | 'D' | 'C' | 'B' | 'A' | 'AA' | 'AAA';
+
 export interface SongPlayInfo {
-    timestamp: string;
+    timestamp?: string;
+    score?: number;
+    rating: SongPlayRating;
     difficulty: SongDifficultyInfo;
 }
 
 export interface SongDifficultyInfo {
     difficulty: string;
-    score: string;
     ratingThumbnailUrl: string;
 }
 
@@ -34,5 +37,5 @@ export type SongStyleDifficultyName = 'beginner' | 'basic' | 'difficult' | 'expe
 
 export interface SongStyleDifficultyMetadata {
     name: SongStyleDifficultyName
-    score?: number;
+    value?: number;
 }

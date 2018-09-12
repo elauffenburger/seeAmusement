@@ -18,6 +18,7 @@ import { SongsProvider } from '../providers/songs/songs';
 import { HttpClientModule } from '@angular/common/http';
 import { ScoresOverviewPage } from '../pages/scores-overview/scores-overview';
 import { UiProvider } from '../providers/ui/ui';
+import { ScoresGroupPage } from '../pages/scores-group/scores-group';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { UiProvider } from '../providers/ui/ui';
     HomePage,
     OptionsPage,
     RecentlyPlayedPage,
-    ScoresOverviewPage
+    ScoresOverviewPage,
+    ScoresGroupPage
   ],
   imports: [
     BrowserModule,
@@ -40,7 +42,8 @@ import { UiProvider } from '../providers/ui/ui';
     HomePage,
     OptionsPage,
     RecentlyPlayedPage,
-    ScoresOverviewPage
+    ScoresOverviewPage,
+    ScoresGroupPage
   ],
   providers: [
     StatusBar,

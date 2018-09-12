@@ -10,14 +10,15 @@
 
 <ion-content padding>
   <ng-container *ngIf="!!activeFilter">
-    <ion-segment [(ngModel)]="activeFilter">
+    <ion-segment [ngModel]="activeFilter" (ngModelChange)="onChangeActiveFilter($event)">
       <ion-segment-button *ngFor="let filter of filters" [value]="filter">
         {{filter.text}}
       </ion-segment-button>
     </ion-segment>
-    <ion-item-group *ngFor="let group of this.getVisibleSongGroupings()">
-      <ion-item-divider color="light">{{group.grouping}}</ion-item-divider>
-      <scores-song *ngFor="let song of group.songs" [song]="song"></scores-song>
-    </ion-item-group>
+    <item-group-accordion *ngFor="let group of this.visibleSongGroupings" color="light" [groupName]="group.grouping" [items]="group.songs">
+      <ng-template let-song="item">
+        <scores-song [song]="song"></scores-song>
+      </ng-template>
+    </item-group-accordion>
   </ng-container>
 </ion-content>

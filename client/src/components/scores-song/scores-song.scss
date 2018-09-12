@@ -5,15 +5,27 @@ scores-song {
         }
     }
 
-    .score-icon {
-        display: inline-flex;
-        align-self: center;
-        justify-self: center;
-        align-items: center;
+    .item-end {
+        display: flex;
         justify-content: center;
-        img {
-            width: 34px;
-            height: 24px;
+        align-items: center;
+        flex-direction: column;
+
+        .score-icon {
+            display: inline-flex;
+            align-self: center;
+            justify-self: center;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                width: 34px;
+                height: 24px;
+            }
+        }
+
+        .score {
+
         }
     }
 }

@@ -1,10 +1,13 @@
-<ion-item class="song" *ngIf="song && song.playInfo && song.playInfo.length">
+<ion-item class="song" *ngIf="song">
   <ion-thumbnail item-start>
     <img [src]="song.thumbnailUrl" />
   </ion-thumbnail>
   <h2 class="song-title">{{song.title}}</h2>
-  <p>{{song.playInfo[0]?.difficulty.difficulty}}</p>
-  <ion-thumbnail class="score-icon" item-end>
-    <img [src]="song.playInfo[0].difficulty.ratingThumbnailUrl" />
-  </ion-thumbnail>
+  <p>{{song.playInfo[0].difficulty.difficulty}}</p>
+  <div class="item-end" item-end>
+    <ion-thumbnail class="score-icon">
+      <img [src]="song.playInfo[0].difficulty.ratingThumbnailUrl" />
+    </ion-thumbnail>
+    <span class="score">{{song.playInfo[0].score}}</span>
+  </div>
 </ion-item>

@@ -1,24 +1,33 @@
 export interface Song {
+    id: string;
     title: string;
     artist: string;
     thumbnailUrl: string;
-    playInfo: SongPlayInfo[];    
+    playInfo: SongPlayInfo[];
 }
 
+export type SongPlayRating = 'NONE' | 'E' | 'D' | 'C' | 'B' | 'A' | 'AA' | 'AAA';
+
 export interface SongPlayInfo {
-    timestamp: string;
+    timestamp?: string;
+    score?: number;
+    rating: SongPlayRating;
     difficulty: SongDifficultyInfo;
 }
 
 export interface SongDifficultyInfo {
     difficulty: string;
-    score: string;
     ratingThumbnailUrl: string;
 }
 
 export type SongStyle = 'single';
 
+export interface SongMetadataLookup {
+    [id: string]: SongMetadata;
+}
+
 export interface SongMetadata {
+    id: string;
     title: string;
     artist: string;
     styles: SongStyleMetadata[];
@@ -33,5 +42,5 @@ export type SongStyleDifficultyName = 'beginner' | 'basic' | 'difficult' | 'expe
 
 export interface SongStyleDifficultyMetadata {
     name: SongStyleDifficultyName
-    score?: number;
+    value?: number;
 }
