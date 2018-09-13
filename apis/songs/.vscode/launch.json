@@ -27,10 +27,6 @@
             ],
             "protocol": "inspector",
             "runtimeExecutable": "node",
-            "env": {
-                // Here we set some environment vars that should be set locally.
-                // They can and will overwrite the ones coming from your serverless.yml
-            },
             "windows": {
                 "program": "${workspaceRoot}\\node_modules\\serverless\\bin\\serverless",
             }

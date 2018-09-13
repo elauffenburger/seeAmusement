@@ -111,7 +111,7 @@ export class SongsService {
                             {
                                 timestamp: $(columns.get(4)).text(),
                                 score: isNaN(score) ? null : score,
-                                rating: this.getRatingFromImageUrl(this.getRatingFromImageUrl(ratingThumbnailUrl)),
+                                rating: this.getRatingFromImageUrl(ratingThumbnailUrl),
                                 difficulty: {
                                     difficulty: $(columns.get(1)).text(),
                                     ratingThumbnailUrl: this.mungSongImageUrl(ratingThumbnailUrl),

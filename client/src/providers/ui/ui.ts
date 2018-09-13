@@ -66,15 +66,17 @@ export class UiProvider {
 
           return response;
         case 'unknown':
-          this.alert.create({ message: 'Some unknown error occurred' });
+          this.alert.create({ message: 'Some unknown error occurred' }).present();
 
           return response;
       }
     } catch (e) {
-      console.error('Something went critically wrong while getting songs!');
-      console.error('errors: ', JSON.stringify(e));
+      const errors = JSON.stringify(e);
 
-      throw e;
+      console.error('Something went critically wrong while getting songs!');
+      console.error('errors: ', errors);
+
+      this.alert.create({ message: `Something went wrong!\n${errors}` }).present();
     }
   }
 }
